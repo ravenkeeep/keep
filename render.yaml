@@ -1,19 +1,12 @@
 services:
   - type: web
-    name: keepup-frontend
-    env: static
-    buildCommand: "" # No build step needed for plain HTML
-    staticPublishPath: "./"
-    routes:
-      - type: rewrite
-        from: /dashboard
-        to: /index.html
-      - type: rewrite
-        from: /watchlist
-        to: /watchlist.html
-      - type: rewrite
-        from: /foryou
-        to: /foryou.html
-      - type: rewrite
-        from: /login
-        to: /login.html
+    name: keepup-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18.16.0
+      - key: PORT
+        value: 5000

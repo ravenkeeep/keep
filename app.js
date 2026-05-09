@@ -2,7 +2,7 @@
 // This automatically switches between your local server and your deployed backend
 window.API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
   ? "http://localhost:5000/api" 
-  : "https://your-backend-api.onrender.com/api"; // TODO: Replace with your actual Render backend URL
+  : "https://keepup-backend.onrender.com/api"; // Replace with your actual Render Web Service URL
 
 let path = window.location.pathname.split("/").pop() || "index.html";
 // Normalize clean URLs for routing logic
@@ -38,26 +38,7 @@ const user = localStorage.getItem("keepup_user");
     const isLanding = path === "landing.html";
     
     // Consistent Logo Rendering
-    const logoHtml = `
-      <a href="index.html" class="flex items-center gap-2 group">
-        <div class="bg-purple-600 p-1.5 rounded-lg group-hover:rotate-12 transition-transform"><i class="fa-solid fa-tv text-white text-xs"></i></div>
 ...
-
-...
-      <p class="text-gray-600 text-xs">© 2024 KeepUp. All cinematic rights reserved. Powered by TMDB.</p>
-    `;
-  }
-
-  // 3. Page Protection
-  const publicPages = ["landing.html", "login.html", "blog.html"];
-  if (!user && !publicPages.includes(path)) {
-    window.location.href = "landing.html";
-  }
-
-  // 4. Global UI Updates (e.g., display name for dashboard)
-  const nameDisplay = document.getElementById("display-name");
-  if (nameDisplay && user) {
-    nameDisplay.innerText = user.split("@")[0];
   }
 
   // Update For You personalized text
