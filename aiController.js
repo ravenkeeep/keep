@@ -17,11 +17,9 @@ exports.getAiSuggestions = async (req, res) => {
     const response = await result.response;
     const text = response.text();
     
-    // Clean text in case of markdown blocks
     const cleanJson = text.replace(/```json|```/g, "").trim();
     const titles = JSON.parse(cleanJson);
 
-    // Enrich titles with TMDB data
     const enrichedSuggestions = await Promise.all(
       titles.map(async (title) => {
         try {
@@ -34,7 +32,6 @@ exports.getAiSuggestions = async (req, res) => {
           });
           return tmdbRes.data.results[0];
         } catch (err) {
-          // If a title from Gemini doesn't yield a TMDB result, return null
           return null;
         }
       })
