@@ -34,17 +34,18 @@ exports.getAiSuggestions = async (req, res) => {
           });
           return tmdbRes.data.results[0];
         } catch (err) {
+          // If a title from Gemini doesn't yield a TMDB result, return null
           return null;
         }
       })
     );
 
     res.json({
-      suggestions: enrichedSuggestions.filter(item => item !== null)
+      suggestions: enrichedSuggestions.filter(item => item !== null) // Filter out any titles not found on TMDB
     });
 
   } catch (error) {
     console.error("AI Error:", error);
-    res.status(500).json({ message: "Error generating suggestions" });
+    res.status(500).json({ message: "Error generating suggestions", error: error.message });
   }
 };

@@ -25,8 +25,9 @@ exports.getMovieDetails = async (req, res) => {
     });
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching movie details", error: error.message });
+    res.status(error.response?.status || 500).json({ message: "Error searching movies", error: error.message });
   }
+};
 };
 
 exports.searchMovies = async (req, res) => {
