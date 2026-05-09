@@ -2,7 +2,7 @@
 // This automatically switches between your local server and your deployed backend
 window.API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
   ? "http://localhost:5000/api" 
-  : "https://keepup-backend.onrender.com/api"; // Replace with your actual Render Web Service URL
+  : "https://keepup-backend-g1hz.onrender.com/api"; // Your actual Render backend URL
 
 let path = window.location.pathname.split("/").pop() || "index.html";
 // Normalize clean URLs for routing logic
@@ -48,9 +48,3 @@ const user = localStorage.getItem("keepup_user");
   }
 
   // 5. Load Dashboard Specific Data if on index.html
-  if (path === "index.html" && user) {
-    loadDashboardStatsAndTrending(user);
-  }
-...
-    // Safe updates: only update if elements are present on the current page
-    const watchingEl = document.getElementById("stat-watching");
