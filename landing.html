@@ -1,3 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KeepUp - Track Your Journey</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="app.js" defer></script>
+    <style>
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+      }
+      .animate-fade-in {
+        animation: fadeInUp 0.6s ease-out forwards;
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body class="bg-[#0b0b0f] text-white font-sans selection:bg-purple-500/30">
     <header></header>
 
     <main class="animate-fade-in-up">
@@ -10,3 +43,34 @@
           <span
             class="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent"
             >KeepUp.</span
+          >
+        </h2>
+        <p
+          class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 animate-fade-in"
+          style="animation-delay: 0.2s"
+        >
+          The ultimate companion for movie lovers. Track your progress, discover
+          AI-powered recommendations, and never miss a beat of your favorite
+          shows.
+        </p>
+        <div
+          class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in"
+          style="animation-delay: 0.4s"
+        >
+          <a
+            href="login.html"
+            class="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all hover:scale-105 shadow-xl shadow-purple-600/20 flex items-center justify-center gap-2"
+          >
+            Get Started <i class="fa-solid fa-arrow-right text-sm"></i>
+          </a>
+          <a
+            href="#features"
+            class="w-full sm:w-auto bg-[#12121a] hover:bg-[#1a1a26] border border-gray-800 px-8 py-4 rounded-2xl font-bold text-lg transition-all hover:border-gray-700"
+          >
+            Learn More
+          </a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
