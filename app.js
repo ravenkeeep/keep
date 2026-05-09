@@ -1,23 +1,12 @@
 /** GLOBAL CONFIGURATION **/
-// This automatically switches between your local server and your deployed backend
 window.API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
   ? "http://localhost:5000/api" 
-  : "https://keepup-backend-g1hz.onrender.com/api"; // Your actual Render backend URL
+  : "https://keepup-backend-g1hz.onrender.com/api";
 
 let path = window.location.pathname.split("/").pop() || "index.html";
-// Normalize clean URLs for routing logic
 if (path === "dashboard") path = "index.html";
 if (path && !path.includes(".")) path += ".html";
 
-const user = localStorage.getItem("keepup_user");
-
-  // Inject Global Background Glow (Subtle radial purple)
-  if (!document.getElementById('global-bg-glow')) {
-    const glow = document.createElement('div');
-    glow.id = 'global-bg-glow';
-    glow.className = "fixed inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(147,51,234,0.1),transparent_50%)] pointer-events-none z-[-1]";
-    document.body.prepend(glow);
-    
     // Ensure body has base theme classes
     document.body.classList.add('bg-[#0b0b0f]', 'text-white', 'font-sans', 'selection:bg-purple-500/30');
   }

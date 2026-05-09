@@ -193,6 +193,39 @@
 
     <footer></footer>
 
-    <script></script>
+    <script>
+      async function loadDashboardTrending() {
+        const container = document.getElementById("trending-dashboard");
+        if (!container) return;
+
+        try {
+          // Fetch trending data via your Render backend
+          const res = await fetch(`${window.API_BASE}/trending`);
+          if (!res.ok) throw new Error("Failed to fetch trending data");
+          const data = await res.json();
+
+          if (data.results && data.results.length > 0) {
+            container.innerHTML = data.results
+              .slice(0, 4)
+              .map(
+                (item) => `
+              <div class="group cursor-pointer">
+                <div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-gray-800 group-hover:border-purple-500 transition-colors">
+                  <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="${item.title || item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                </div>
+                <p class="mt-2 text-xs font-medium truncate text-gray-400 group-hover:text-purple-400 transition-colors">${item.title || item.name}</p>
+              </div>
+            `,
+              )
+              .join("");
+          }
+        } catch (err) {
+          console.error("Dashboard Trending Error:", err);
+          container.innerHTML = `<p class="text-gray-500 text-xs italic text-center col-span-full">Trending data is temporarily unavailable.</p>`;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", loadDashboardTrending);
+    </script>
   </body>
 </html>
