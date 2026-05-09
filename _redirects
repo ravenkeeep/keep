@@ -1,0 +1,5 @@
+# Route requests to .html files automatically
+/dashboard /index.html 200
+/watchlist /watchlist.html 200
+/foryou    /foryou.html 200
+/login     /login.html 200

@@ -1,0 +1,238 @@
+      <div class="flex flex-wrap items-center gap-3 mb-6" id="filterButtons">
+        <button onclick="setFilter('All')" class="filter-btn active-filter bg-[#12121a] text-gray-400 px-4 py-1.5 rounded-full border border-purple-500 text-white transition-colors">
+          All
+        </button>
+        <button onclick="setFilter('Watching')" class="filter-btn bg-[#12121a] text-gray-400 px-4 py-1.5 rounded-full border border-gray-800 hover:border-gray-700 transition-colors">
+          Watching
+        </button>
+        <button onclick="setFilter('Completed')" class="filter-btn bg-[#12121a] text-gray-400 px-4 py-1.5 rounded-full border border-gray-800 hover:border-gray-700 transition-colors">
+          Completed
+        </button>
+        <button onclick="setFilter('Planned')" class="filter-btn bg-[#12121a] text-gray-400 px-4 py-1.5 rounded-full border border-gray-800 hover:border-gray-700 transition-colors">
+          Planned
+        </button>
+        <button onclick="setFilter('Dropped')" class="filter-btn bg-[#12121a] text-gray-400 px-4 py-1.5 rounded-full border border-gray-800 hover:border-gray-700 transition-colors">
+          Dropped
+        </button>
+
+        <!-- Search Bar -->
+        <div class="relative flex-1 max-w-xs ml-0 md:ml-4">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+          <input 
+            type="text" 
+            id="watchlistSearch"
+            placeholder="Search your list..." 
+            oninput="handleSearch(this.value)"
+            class="w-full bg-[#12121a] border border-gray-800 rounded-full py-1.5 pl-9 pr-4 text-xs outline-none focus:border-purple-500 transition-colors text-gray-200"
+          />
+        </div>
+        
+        <div class="ml-auto flex items-center gap-2 bg-[#12121a] px-4 py-1.5 rounded-full border border-gray-800">
+          <i class="fa-solid fa-stopwatch text-purple-400 text-xs"></i>
+          <span class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Total Time:</span>
+          <span id="totalWatchTime" class="text-xs font-bold text-white">0m</span>
+        </div>
+      </div>
+
+      <script>
+        if (!localStorage.getItem("keepup_user")) {
+          window.location.href = "login.html";
+        }
+      </script>
+
+      <!-- User's Watchlist Display -->
+      <div
+        id="userWatchlist"
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mt-8"
+      >
+        <!-- Watchlist items will be loaded here -->
+        <p class="text-gray-500 text-sm italic col-span-full text-center py-8">
+          Loading watchlist...
+        </p>
+      </div>
+
+      <!-- MODAL (Add Show Popup) -->
+      <div
+        id="addShowModal"
+        class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 modal-backdrop"
+      >
+        <div
+          class="bg-[#12121a] border border-gray-800 w-full max-w-2xl rounded-2xl overflow-hidden animate-on-load"
+    <script>
+      const userEmail = localStorage.getItem("keepup_user");
+      let allWatchlistItems = []; // Store enriched data globally
+      let currentFilter = 'All';
+      let searchQuery = '';
+
+      function formatTime(totalMinutes) {
+        const days = Math.floor(totalMinutes / 1440);
+        const hours = Math.floor((totalMinutes % 1440) / 60);
+        const mins = totalMinutes % 60;
+        let parts = [];
+        if (days > 0) parts.push(`${days}d`);
+        if (hours > 0) parts.push(`${hours}h`);
+        if (mins > 0 || parts.length === 0) parts.push(`${mins}m`);
+        return parts.join(" ");
+      }
+
+      function setFilter(filter) {
+        currentFilter = filter;
+        
+        // Update button styles
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          const isMatch = btn.innerText.trim() === filter;
+          btn.classList.toggle('border-purple-500', isMatch);
+          btn.classList.toggle('text-white', isMatch);
+          btn.classList.toggle('border-gray-800', !isMatch);
+          btn.classList.toggle('text-gray-400', !isMatch);
+        });
+
+        renderWatchlist();
+      }
+
+      function handleSearch(query) {
+        searchQuery = query.toLowerCase().trim();
+        renderWatchlist();
+      }
+
+      async function loadUserWatchlist() {
+        const container = document.getElementById("userWatchlist");
+        if (!userEmail || !container) return;
+
+        try {
+          // 1. Fetch the items in the user's watchlist from the backend
+          const response = await fetch(`${window.API_BASE}/watchlist?email=${userEmail}`);
+          const watchlistItems = await response.json();
+
+          if (watchlistItems.length === 0) {
+            container.innerHTML = `<p class="text-gray-500 text-sm italic col-span-full text-center py-8">Your watchlist is empty.</p>`;
+            return;
+          }
+
+          // 2. Fetch full TMDB details for each item to get posters and titles
+          const detailedItems = await Promise.all(
+            watchlistItems.map(item =>
+              fetch(`${window.API_BASE}/tmdb/details?id=${item.id}&type=${item.type}`)
+                .then(res => res.json())
+                .then(details => ({ ...item, ...details })) // Merge DB state with TMDB metadata
+                .catch(() => item) // Fallback to basic data if TMDB fetch fails
+            )
+          );
+
+          allWatchlistItems = detailedItems;
+          renderWatchlist();
+        } catch (err) {
+          console.error("Watchlist Load Error:", err);
+          document.getElementById("userWatchlist").innerHTML = `<p class="text-red-500 text-sm col-span-full text-center py-8">Failed to load your watchlist.</p>`;
+        }
+      }
+
+      function renderWatchlist() {
+        const container = document.getElementById("userWatchlist");
+        
+        const filteredItems = allWatchlistItems.filter(item => {
+          const status = item.status || 'Planned';
+          const title = (item.title || item.name || '').toLowerCase();
+          
+          const matchesFilter = currentFilter === 'All' || status === currentFilter;
+          const matchesSearch = title.includes(searchQuery);
+          
+          return matchesFilter && matchesSearch;
+        });
+
+        // Calculate Time for filtered set
+        let totalMinutes = 0;
+        filteredItems.forEach(item => {
+          if (item.type === 'movie' && item.runtime) {
+            totalMinutes += item.runtime;
+          } else if (item.type === 'tv') {
+            const epTime = (item.episode_run_time && item.episode_run_time.length > 0) ? item.episode_run_time[0] : 0;
+            const epCount = item.number_of_episodes || 0;
+            totalMinutes += (epTime * epCount);
+          }
+        });
+        document.getElementById("totalWatchTime").innerText = formatTime(totalMinutes);
+
+        if (filteredItems.length === 0) {
+          container.innerHTML = `<p class="text-gray-500 text-sm italic col-span-full text-center py-8">No items found.</p>`;
+          return;
+        }
+
+        container.innerHTML = filteredItems.map(item => `
+          <div class="bg-[#12121a] border border-gray-800 rounded-xl overflow-hidden group hover:border-purple-500 transition-all duration-300">
+            <div class="relative aspect-[2/3] overflow-hidden">
+              <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="${item.title || item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-purple-400 border border-purple-500/30 uppercase">${item.type}</div>
+            </div>
+            <div class="p-3">
+              <h4 class="text-sm font-medium truncate">${item.title || item.name}</h4>
+              <div class="flex items-center justify-between mt-2">
+                <select 
+                  onchange="updateWatchlistStatus('${item.id}', '${item.type}', this.value)" 
+                  class="bg-purple-600/20 text-purple-400 text-[10px] px-1 py-0.5 rounded border-none outline-none cursor-pointer hover:bg-purple-600/30 transition-colors"
+                >
+                  <option value="Watching" class="bg-[#12121a]" ${item.status === 'Watching' ? 'selected' : ''}>Watching</option>
+                  <option value="Completed" class="bg-[#12121a]" ${item.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                  <option value="Planned" class="bg-[#12121a]" ${item.status === 'Planned' || !item.status ? 'selected' : ''}>Planned</option>
+                  <option value="Dropped" class="bg-[#12121a]" ${item.status === 'Dropped' ? 'selected' : ''}>Dropped</option>
+                </select>
+                <button onclick="deleteWatchlistItem('${item.id}', '${item.type}')" class="text-gray-500 hover:text-red-500 transition-colors p-1" title="Remove">
+                  <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join("");
+      }
+
+      async function updateWatchlistStatus(id, type, newStatus) {
+        try {
+          const response = await fetch(`${window.API_BASE}/watchlist`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: userEmail, id, type, status: newStatus })
+          });
+
+          if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            alert(data.error || "Failed to update status.");
+            // Refresh to sync UI with DB if update failed
+            loadUserWatchlist();
+          }
+        } catch (err) {
+          console.error("Update Error:", err);
+          alert("A connection error occurred.");
+          loadUserWatchlist();
+        }
+      }
+
+      async function deleteWatchlistItem(id, type) {
+        if (!confirm("Are you sure you want to remove this item?")) return;
+
+        try {
+          const response = await fetch(`${window.API_BASE}/watchlist`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: userEmail, id, type })
+          });
+
+          if (response.ok) {
+            // Re-fetch the watchlist to refresh the UI
+            loadUserWatchlist();
+            // Automatically sync dashboard stats in app.js
+            if (typeof loadDashboardStatsAndTrending === "function") {
+              loadDashboardStatsAndTrending(userEmail);
+            }
+          } else {
+            const data = await response.json().catch(() => ({}));
+            alert(data.error || "Failed to remove the item.");
+          }
+        } catch (err) {
+          console.error("Delete Error:", err);
+          alert("A connection error occurred. Could not delete the item.");
+        }
+      }
+
+      // Load watchlist on page load
+      document.addEventListener("DOMContentLoaded", loadUserWatchlist);
+    </script>

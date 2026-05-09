@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KeepUp - For You</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="app.js" defer></script>
+    <style>
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-on-load {
+        animation: fadeInUp 0.6s ease-out forwards;
+      }
+    </style>
+  </head>
+
+  <body class="bg-[#0b0b0f] text-white">
+    <!-- NAVBAR -->
+    <header></header>
+
+    <!-- MAIN -->
+    <main class="px-4 md:px-10 py-8 animate-on-load">
+      <!-- HEADER -->
+      <div
+        class="flex flex-col md:flex-row justify-between items-start mb-10 gap-4"
+      >
+        <div>
+          <h2 class="text-2xl font-semibold flex items-center gap-2">
+            ✨ For You
+          </h2>
+          <p
+            id="personal-recommendation-text"
+            class="text-gray-400 text-sm mt-1"
+          >
+            AI recommendations based on your activity
+          </p>
+        </div>
+
+        <div class="flex gap-3 w-full md:w-auto">
+          <button
+            class="flex-1 md:flex-none border border-gray-700 px-4 py-2 rounded-lg text-sm hover:border-purple-500"
+          >
+            <i class="fa-solid fa-sliders mr-2"></i> Fine-tune
+          </button>
+
+          <button
+            class="flex-1 md:flex-none bg-purple-600 px-4 py-2 rounded-lg text-sm hover:bg-purple-700"
+          >
+            <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Get Suggestions
+          </button>
+        </div>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div
+        class="flex flex-col items-center justify-center text-center mt-10 mb-16"
+      >
+        <div
+          class="bg-purple-600/20 text-purple-400 p-4 rounded-xl mb-4 text-xl"
+        >
+          ✨
+        </div>
+
+        <h3 class="text-lg font-semibold mb-2">Build your watchlist first</h3>
+
+        <p class="text-gray-400 text-sm max-w-md">
+          Add some shows and movies to your watchlist so we can learn your
+          preferences.
+        </p>
+      </div>
+
+      <!-- TRENDING -->
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold flex items-center gap-2">
+          📈 Trending Now
+        </h3>
+
+        <button
+          onclick="loadTrending()"
+          class="border border-gray-700 px-3 py-1 rounded-lg text-sm hover:border-purple-500"
+        >
+          <i class="fa-solid fa-rotate mr-1"></i> Refresh
+        </button>
+      </div>
+
+      <!-- TRENDING BOX -->
+      <div
+        id="trendingBox"
+        class="bg-[#12121a] border border-gray-800 rounded-xl p-6 text-center text-gray-400"
+      >
+        Click "Refresh" to load what's trending right now.
+      </div>
+    </main>
+
+    <footer></footer>
+
+    <!-- SCRIPT -->
+    <script>
+      async function loadTrending() {
+        const box = document.getElementById("trendingBox");
+        if (!box) return;
+        box.innerHTML = "Loading...";
+
+        try {
+          const res = await fetch(`${window.API_BASE}/trending`);
+          const data = await res.json();
+
+          box.innerHTML = `
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        ${data.results
+          .slice(0, 10)
+          .map(
+            (item) => `
+          <div class="text-left group cursor-pointer">
+            <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="rounded-lg mb-2 transition-transform duration-300 group-hover:scale-105 group-hover:ring-2 ring-purple-500"/>
+            <p class="text-sm">${item.title || item.name}</p>
+          </div>
+        `,
+          )
+          .join("")}
+      </div>
+    `;
+        } catch {
+          box.innerHTML = "Failed to load trending data.";
+        }
+      }
+
+      window.onload = loadTrending;
+    </script>
+  </body>
+</html>

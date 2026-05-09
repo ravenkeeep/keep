@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KeepUp - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-slide-in {
+        animation: slideIn 0.6s ease-out forwards;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-[#0b0b0f] text-white font-sans flex items-center justify-center min-h-screen p-6 relative overflow-hidden"
+  >
+    <div
+      class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full"
+    ></div>
+    <div
+      class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full"
+    ></div>
+
+    <div
+      class="max-w-md w-full bg-[#12121a]/80 backdrop-blur-xl border border-gray-800 p-8 rounded-3xl shadow-2xl animate-slide-in z-10"
+    >
+      <div class="flex flex-col items-center mb-8">
+        <div
+          class="bg-gradient-to-br from-purple-500 to-purple-700 p-3 rounded-2xl mb-4 shadow-lg shadow-purple-600/20"
+        >
+          <i class="fa-solid fa-tv text-2xl"></i>
+        </div>
+        <h1
+          id="authTitle"
+          class="text-3xl font-bold tracking-tight brand-gradient"
+        >
+          Welcome back
+        </h1>
+        <p class="text-gray-400 text-sm mt-2 text-center">
+          Track your favorite shows and movies seamlessly.
+        </p>
+      </div>
+
+      <form id="loginForm" class="space-y-6">
+        <div>
+          <label
+            id="emailLabel"
+            class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2"
+            >Email Address</label
+          >
+          <input
+            type="email"
+            id="email"
+            placeholder="email@example.com"
+            required
+            class="w-full bg-black border border-gray-800 px-4 py-3 rounded-lg text-sm outline-none focus:border-purple-500 transition-colors"
+          />
+        </div>
+
+        <div id="passwordArea">
+          <label
+            id="passwordLabel"
+            class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2"
+            >Password</label
+          >
+          <input
+            type="password"
+            id="password"
+            placeholder="••••••••"
+            required
+            class="w-full bg-black border border-gray-800 px-4 py-3 rounded-lg text-sm outline-none focus:border-purple-500 transition-colors"
+          />
+        </div>
+
+        <div id="recoveryArea" class="hidden">
+          <label
+            id="recoveryLabel"
+            class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2"
+            >Reset Code (check your email)</label
+          >
+          <input
+            type="text"
+            id="recoveryAnswer"
+            placeholder="Enter 6-digit code"
+            class="w-full bg-black border border-gray-800 px-4 py-3 rounded-lg text-sm outline-none focus:border-purple-500 transition-colors"
+          />
+        </div>
+
+        <div id="resetNewPasswordArea" class="hidden">
+          <label
+            class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2"
+            >New Password</label
+          >
+          <input
+            type="password"
+            id="newPassword"
+            placeholder="New password"
+            class="w-full bg-black border border-gray-800 px-4 py-3 rounded-lg text-sm outline-none focus:border-purple-500 transition-colors"
+          />
+        </div>
+
+        <div
+          id="errorMsg"
+          class="hidden text-red-500 text-xs bg-red-500/10 p-3 rounded-lg border border-red-500/20"
+        ></div>
+
+        <button
+          id="authSubmitBtn"
+          type="submit"
+          class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+        >
+          Login <i class="fa-solid fa-arrow-right text-sm"></i>
+        </button>
+      </form>
+
+      <div class="mt-4 text-center">
+        <button
+          onclick="toggleAuthMode()"
+          id="authToggleBtn"
+          class="text-sm text-purple-400 hover:text-purple-300 transition-colors"
+        >
+          Need an account? Sign up
+        </button>
+        <div class="mt-2">
+          <button
+            onclick="toggleForgotMode()"
+            id="forgotBtn"
+            class="text-xs text-gray-500 hover:text-white transition-colors"
+          >
+            Forgot Password?
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-gray-800 text-center">
+        <p class="text-gray-500 text-xs">
+          By continuing, you agree to our Terms of Service.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      let isLoginMode = true;
+      let isForgotMode = false;
+
+      function toggleAuthMode() {
+        if (isForgotMode) toggleForgotMode();
+        isLoginMode = !isLoginMode;
+        const title = document.getElementById("authTitle");
+        const submitBtn = document.getElementById("authSubmitBtn");
+        const toggleBtn = document.getElementById("authToggleBtn");
+        const recoveryArea = document.getElementById("recoveryArea");
+
+        title.innerText = isLoginMode ? "Welcome back" : "Create Account";
+        submitBtn.innerHTML = isLoginMode
+          ? 'Login <i class="fa-solid fa-arrow-right text-sm"></i>'
+          : 'Sign Up <i class="fa-solid fa-user-plus text-sm"></i>';
+        toggleBtn.innerText = isLoginMode
+          ? "Need an account? Sign up"
+          : "Already have an account? Login";
+
+        recoveryArea.classList.add("hidden");
+        document.getElementById("recoveryAnswer").required = false;
+      }
+
+      function toggleForgotMode() {
+        isForgotMode = !isForgotMode;
+        const title = document.getElementById("authTitle");
+        const passwordArea = document.getElementById("passwordArea");
+        const recoveryArea = document.getElementById("recoveryArea");
+        const resetNewPasswordArea = document.getElementById(
+          "resetNewPasswordArea",
+        );
+        const submitBtn = document.getElementById("authSubmitBtn");
+
+        title.innerText = isForgotMode
+          ? "Reset Password"
+          : isLoginMode
+            ? "Welcome back"
+            : "Create Account";
+        passwordArea.classList.toggle("hidden", isForgotMode);
+        recoveryArea.classList.toggle("hidden", !isForgotMode);
+        resetNewPasswordArea.classList.toggle("hidden", !isForgotMode);
+        document.getElementById("recoveryLabel").innerText = "Reset Code";
+        submitBtn.innerText = isForgotMode
+          ? "Reset Password"
+          : isLoginMode
+            ? "Login"
+            : "Sign Up";
+
+        document.getElementById("recoveryAnswer").required =
+          isForgotMode || !isLoginMode;
+        document.getElementById("newPassword").required = isForgotMode;
+      }
+
+      // Redirect if already logged in
+      if (localStorage.getItem("keepup_user")) {
+        window.location.href = "index.html";
+      }
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value;
+          const recoveryAnswer = document
+            .getElementById("recoveryAnswer")
+            .value.trim();
+          const newPassword = document.getElementById("newPassword").value;
+          const errorMsg = document.getElementById("errorMsg");
+
+          let endpoint;
+          if (isForgotMode) {
+            // If resetCode is empty, we are just requesting the email
+            endpoint = recoveryAnswer ? "/reset-password" : "/forgot-password";
+          } else {
+            endpoint = isLoginMode ? "/login" : "/signup";
+          }
+
+          errorMsg.classList.add("hidden");
+
+          const payload = isForgotMode
+            ? { email, resetCode: recoveryAnswer, newPassword }
+            : { email, password };
+
+          try {
+            const res = await fetch(`${window.API_BASE}${endpoint}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+
+            let data = {};
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+              data = await res.json();
+            } else if (!res.ok) {
+              throw new Error(`Server Error: ${res.status}`);
+            }
+
+            if (isForgotMode && res.ok) {
+              errorMsg.innerText = "Password reset successful! Please login.";
+              errorMsg.className =
+                "text-green-500 text-xs bg-green-500/10 p-3 rounded-lg border border-green-500/20";
+              errorMsg.classList.remove("hidden");
+              toggleForgotMode();
+              return;
+            }
+
+            if (res.ok && data.email) {
+              localStorage.setItem("keepup_user", data.email);
+              window.location.href = "index.html";
+            } else {
+              throw new Error(
+                data.error || (isLoginMode ? "Login failed" : "Signup failed"),
+              );
+            }
+          } catch (err) {
+            errorMsg.innerText =
+              err.message === "Failed to fetch"
+                ? "Server is offline"
+                : err.message;
+            errorMsg.classList.remove("hidden");
+          }
+        });
+    </script>
+  </body>
+</html>

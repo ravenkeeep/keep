@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KeepUp Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="app.js" defer></script>
+    <style>
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+      }
+      .card-transition {
+        @apply transition-all duration-300 hover:-translate-y-1 hover:border-purple-500 hover:shadow-[0_0_25px_rgba(168,85,247,0.15)];
+      }
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          #12121a 25%,
+          #1a1a26 50%,
+          #12121a 75%
+        );
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+      }
+      @keyframes loading {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-[#0b0b0f] text-white font-sans selection:bg-purple-500/30">
+    <!-- NAVBAR -->
+    <header></header>
+
+    <!-- MAIN -->
+    <main class="relative px-4 md:px-10 py-8 animate-fade-in-up">
+      <!-- HEADER TEXT -->
+      <div class="mb-8">
+        <h2 class="text-4xl font-bold tracking-tight">
+          Welcome back,
+          <span
+            id="display-name"
+            class="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent"
+            >Guest</span
+          >
+          👋
+        </h2>
+        <p class="text-gray-400 mt-2">
+          Here's what's happening with your watchlist.
+        </p>
+      </div>
+
+      <!-- PROGRESS BAR -->
+      <div class="mb-8 bg-[#12121a] p-4 rounded-2xl border border-gray-800">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-xs font-medium text-gray-400 uppercase"
+            >Overall Completion</span
+          >
+          <span
+            id="completion-percent"
+            class="text-xs font-bold text-purple-400"
+            >0%</span
+          >
+        </div>
+        <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+          <div
+            id="progress-fill"
+            class="bg-gradient-to-r from-purple-600 to-pink-500 h-full transition-all duration-1000"
+            style="width: 0%"
+          ></div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <!-- CARD -->
+        <div
+          class="bg-[#12121a]/50 backdrop-blur-sm p-5 rounded-2xl border border-gray-800 flex items-center gap-4 transition-all duration-300 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/5"
+        >
+          <div
+            class="bg-purple-600/10 p-3 rounded-xl text-purple-400 border border-purple-500/20"
+          >
+            <i class="fa-solid fa-eye"></i>
+          </div>
+          <div>
+            <h3 id="stat-watching" class="text-xl font-semibold">0</h3>
+            <p class="text-gray-400 text-sm">Currently Watching</p>
+          </div>
+        </div>
+
+        <div
+          class="bg-[#12121a] p-5 rounded-xl border border-gray-800 flex items-center gap-4 transition-all duration-300 hover:border-purple-500/50"
+        >
+          <div class="bg-purple-600/20 p-3 rounded-lg text-purple-400">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div>
+            <h3 id="stat-completed" class="text-xl font-semibold">0</h3>
+            <p class="text-gray-400 text-sm">Completed</p>
+          </div>
+        </div>
+
+        <div
+          class="bg-[#12121a] p-5 rounded-xl border border-gray-800 flex items-center gap-4 transition-all duration-300 hover:border-purple-500/50"
+        >
+          <div class="bg-purple-600/20 p-3 rounded-lg text-purple-400">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <div>
+            <h3 id="stat-planned" class="text-xl font-semibold">0</h3>
+            <p class="text-gray-400 text-sm">Plan to Watch</p>
+          </div>
+        </div>
+
+        <div
+          class="bg-[#12121a] p-5 rounded-xl border border-gray-800 flex items-center gap-4 transition-all duration-300 hover:border-purple-500/50"
+        >
+          <div class="bg-purple-600/20 p-3 rounded-lg text-purple-400">
+            <i class="fa-solid fa-bell"></i>
+          </div>
+          <div>
+            <h3 id="stat-new" class="text-xl font-semibold">0</h3>
+            <p class="text-gray-400 text-sm">New Seasons</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTION CARDS -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Suggestions -->
+        <div
+          class="bg-[#12121a] p-6 rounded-xl border border-gray-800 transition-all duration-300 hover:border-purple-500 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(168,85,247,0.1)] cursor-pointer"
+        >
+          <div class="text-purple-400 text-xl mb-3">✨</div>
+          <h3 class="font-semibold text-lg mb-2">Get Suggestions</h3>
+          <p class="text-gray-400 text-sm">
+            AI-powered recommendations based on your watching habits
+          </p>
+        </div>
+
+        <!-- Discussions -->
+        <div
+          class="bg-[#12121a] p-6 rounded-xl border border-gray-800 transition-all duration-300 hover:border-purple-500 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(168,85,247,0.1)] cursor-pointer"
+        >
+          <div class="text-purple-400 text-xl mb-3">⭐</div>
+          <h3 class="font-semibold text-lg mb-2">Join Discussions</h3>
+          <p class="text-gray-400 text-sm">
+            Share your thoughts and connect with fellow viewers
+          </p>
+        </div>
+      </div>
+
+      <!-- TRENDING -->
+      <div class="mt-12">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-fire text-orange-500"></i> Trending Today
+        </h3>
+        <div
+          id="trending-dashboard"
+          class="grid grid-cols-2 md:grid-cols-4 gap-4"
+        >
+          <p class="text-gray-500 text-sm italic">
+            Connect your TMDB API key to see what's trending.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <!-- TOAST CONTAINER -->
+    <div
+      id="toast-container"
+      class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2"
+    ></div>
+
+    <footer></footer>
+
+    <script></script>
+  </body>
+</html>

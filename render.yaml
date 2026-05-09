@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: keepup-frontend
+    env: static
+    buildCommand: "" # No build step needed for plain HTML
+    staticPublishPath: "./"
+    routes:
+      - type: rewrite
+        from: /dashboard
+        to: /index.html
+      - type: rewrite
+        from: /watchlist
+        to: /watchlist.html
+      - type: rewrite
+        from: /foryou
+        to: /foryou.html
+      - type: rewrite
+        from: /login
+        to: /login.html

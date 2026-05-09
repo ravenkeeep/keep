@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KeepUp - Discuss</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="app.js" defer></script>
+    <style>
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-slide-in {
+        animation: slideIn 0.5s ease-out forwards;
+      }
+    </style>
+  </head>
+
+  <body class="bg-[#0b0b0f] text-white">
+    <header></header>
+
+    <main class="p-4 md:p-10 animate-slide-in">
+      <h2 class="text-3xl font-semibold mb-6">Discussions</h2>
+
+      <div
+        class="bg-[#12121a] p-6 rounded-xl border border-gray-800 shadow-xl shadow-purple-500/5"
+      >
+        <p class="text-gray-400 mb-4">Start a conversation...</p>
+
+        <textarea
+          class="w-full bg-black border border-gray-700 rounded-lg p-3 mb-3 outline-none focus:border-purple-500 transition-colors"
+        ></textarea>
+        <button
+          class="bg-purple-600 px-4 py-2 rounded hover:bg-purple-700 transition-colors"
+        >
+          Post
+        </button>
+      </div>
+    </main>
+
+    <footer></footer>
+
+    <script>
+      // Page specific logic for discussions goes here
+    </script>
+  </body>
+</html>
