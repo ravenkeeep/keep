@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KeepUp — Friends & Groups</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="topbar">
+      <button id="sidebar-toggle" class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <h1><i data-lucide="film"></i> KeepUp</h1>
+    </div>
+
+    <aside id="sidebar" class="sidebar collapsed" aria-hidden="true">
+      <div class="sidebar-inner">
+        <nav class="page-nav">
+          <a href="index.html"><i data-lucide="home"></i> <span class="nav-label">Home</span></a>
+          <a href="movies.html"><i data-lucide="clapperboard"></i> <span class="nav-label">Movies</span></a>
+          <a href="shows.html"><i data-lucide="tv"></i> <span class="nav-label">Shows</span></a>
+          <a href="social.html"><i data-lucide="users"></i> <span class="nav-label">Friends &amp; Groups</span></a>
+        </nav>
+
+        <!-- sidebar search removed (search moved to topbar on home page) -->
+
+        <div class="sidebar-account">
+          <button id="account-icon-btn" class="account-btn" aria-expanded="false" aria-label="Account">
+            <i data-lucide="user"></i>
+            <span>Account</span>
+          </button>
+          <div id="account-panel" class="account-panel" aria-hidden="true">
+            <div id="signed-out-actions">
+              <p><i data-lucide="info"></i> Sign in from the main page to access Friends & Groups.</p>
+            </div>
+            <div id="signed-in-actions" style="display: none">
+              <button id="sign-out-button" class="danger"><i data-lucide="log-out"></i> Sign Out</button>
+            </div>
+            <div id="auth-message"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div id="overlay" class="overlay" aria-hidden="true"></div>
+
+    <main class="social-container">
+
+      
+      <div id="social-dashboard" class="social-dashboard" style="display: none">
+        
+        <!-- Left Side: Friends Dashboard -->
+        <div class="social-sidebar-column">
+          
+          <!-- Friends List Card -->
+          <div class="social-card" id="friends-list-card">
+            <div class="card-header">
+              <h3><i data-lucide="users"></i> Friends <span class="count-badge" id="friends-count">0</span></h3>
+            </div>
+            <div class="card-body">
+              <div id="friends-list" class="friends-list-container">
+                <p class="empty-text">No friends yet. Add some below!</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Pending Requests Card -->
+          <div class="social-card" id="pending-requests-card">
+            <div class="card-header">
+              <h3><i data-lucide="clock"></i> Pending Requests <span class="count-badge warning" id="pending-count">0</span></h3>
+            </div>
+            <div class="card-body">
+              <div id="pending-requests" class="pending-requests-container">
+                <p class="empty-text">No pending requests.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Search & Add Card -->
+          <div class="social-card" id="search-friends-card">
+            <div class="card-header">
+              <h3><i data-lucide="user-plus"></i> Add Friends</h3>
+            </div>
+            <div class="card-body">
+              <div class="search-input-row">
+                <input id="search-username" placeholder="Search username..." />
+                <button id="search-username-button" class="primary-btn"><i data-lucide="search"></i></button>
+              </div>
+              <div id="user-search-results" class="search-results-container"></div>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- Right Side: Groups & Chat -->
+        <div class="social-main-column">
+          
+          <!-- Groups List Card -->
+          <div class="social-card" id="groups-list-card">
+            <div class="card-header">
+              <h3><i data-lucide="clapperboard"></i> Watch Groups</h3>
+              <div class="header-actions">
+                <button id="show-create-join-btn" class="secondary-btn btn-sm"><i data-lucide="plus-circle"></i> Create/Join</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="user-groups-list" class="groups-grid">
+                <p class="empty-text">No groups joined yet.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Create/Join Panel -->
+          <div class="social-card" id="group-actions-card" style="display: none;">
+            <div class="card-header">
+              <h3>Create or Join Group</h3>
+              <button id="close-group-actions-btn" class="close-btn"><i data-lucide="x"></i></button>
+            </div>
+            <div class="card-body group-actions-row">
+              <div class="action-box">
+                <h4>Create Group</h4>
+                <div class="input-group">
+                  <input id="group-name-input" placeholder="New group name..." />
+                  <button id="create-group-button" class="success-btn"><i data-lucide="plus"></i> Create</button>
+                </div>
+              </div>
+              <div class="action-divider"></div>
+              <div class="action-box">
+                <h4>Join Group</h4>
+                <div class="input-group">
+                  <input id="join-group-id-input" placeholder="Enter Group ID or Name..." />
+                  <button id="join-group-button" class="primary-btn"><i data-lucide="user-check"></i> Join</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Chat Card -->
+          <div class="social-card chat-card" id="group-chat-section">
+            <div id="group-chat" class="chat-container" style="display: none;">
+              <div class="chat-header">
+                <div class="chat-header-info">
+                  <h3 id="group-chat-title">Group Chat</h3>
+                  <div class="group-id-wrapper">
+                    <span class="group-id-label">ID:</span>
+                    <code id="group-chat-id">group-uuid-here</code>
+                    <button id="copy-group-id-btn" class="icon-btn-sm" title="Copy Group ID"><i data-lucide="copy"></i></button>
+                  </div>
+                </div>
+                <div class="chat-header-actions">
+                  <button id="group-members-btn" class="secondary-btn btn-sm" title="View Members"><i data-lucide="users"></i> <span id="members-btn-text">Members</span></button>
+                  <button id="leave-group-btn" class="danger-btn btn-sm" title="Leave Group"><i data-lucide="log-out"></i> Leave</button>
+                </div>
+              </div>
+              
+              <!-- Group Members Dropdown/Drawer -->
+              <div id="group-members-list-drawer" class="members-drawer" style="display: none;">
+                <h4>Group Members</h4>
+                <ul id="group-members-ul">
+                  <!-- dynamically loaded -->
+                </ul>
+              </div>
+
+              <div id="group-messages" class="chat-messages">
+                <!-- Chat bubbles -->
+              </div>
+              
+              <div class="chat-input-wrapper">
+                <textarea id="group-message-input" placeholder="Type a message..." rows="1"></textarea>
+                <button id="group-send-button" class="send-btn"><i data-lucide="send"></i></button>
+              </div>
+            </div>
+            
+            <div id="no-group-message" class="chat-empty-state">
+              <div class="empty-icon"><i data-lucide="message-square"></i></div>
+              <h3>No Active Chat</h3>
+              <p>Select a group from "Watch Groups" or create a new one to start chatting with your friends!</p>
+              <button id="empty-state-action-btn" class="primary-btn"><i data-lucide="plus"></i> Create or Join a Group</button>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </main>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+    <script src="script.js"></script>
+    <!-- Video modal for trailers -->
+    <div id="video-modal" class="video-modal" aria-hidden="true">
+      <div class="video-modal-card">
+        <button id="video-modal-close" class="secondary" aria-label="Close video">Close</button>
+        <div class="video-frame-wrap">
+          <iframe id="video-iframe" src="" frameborder="0" allow="autoplay; encrypted-media; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -3,231 +3,302 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KeepUp Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-      rel="stylesheet"
-    />
-    <script src="app.js" defer></script>
-    <style>
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .animate-fade-in-up {
-        animation: fadeInUp 0.6s ease-out forwards;
-      }
-      .card-transition {
-        @apply transition-all duration-300 hover:-translate-y-1 hover:border-purple-500 hover:shadow-[0_0_25px_rgba(168,85,247,0.15)];
-      }
-      .skeleton {
-        background: linear-gradient(
-          90deg,
-          #12121a 25%,
-          #1a1a26 50%,
-          #12121a 75%
-        );
-        background-size: 200% 100%;
-        animation: loading 1.5s infinite;
-      }
-      @keyframes loading {
-        0% {
-          background-position: 200% 0;
-        }
-        100% {
-          background-position: -200% 0;
-        }
-      }
-    </style>
+    <title>KeepUp — Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
   </head>
-  <body class="bg-[#0b0b0f] text-white font-sans selection:bg-purple-500/30">
-    <!-- NAVBAR -->
-    <header></header>
-
-    <!-- MAIN -->
-    <main class="relative px-4 md:px-10 py-8 animate-fade-in-up">
-      <!-- HEADER TEXT -->
-      <div class="mb-8">
-        <h2 class="text-4xl font-bold tracking-tight">
-          Welcome back,
-          <span
-            id="display-name"
-            class="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent"
-            >Guest</span
-          >
-          👋
-        </h2>
-        <p class="text-gray-400 mt-2">
-          Here's what's happening with your watchlist.
-        </p>
-      </div>
-
-      <!-- PROGRESS BAR -->
-      <div class="mb-8 bg-[#12121a] p-4 rounded-2xl border border-gray-800">
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-xs font-medium text-gray-400 uppercase"
-            >Overall Completion</span
-          >
-          <span
-            id="completion-percent"
-            class="text-xs font-bold text-purple-400"
-            >0%</span
-          >
-        </div>
-        <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
-          <div
-            id="progress-fill"
-            class="bg-gradient-to-r from-purple-600 to-pink-500 h-full transition-all duration-1000"
-            style="width: 0%"
-          ></div>
+  <body class="home">
+    <div class="topbar">
+      <button id="sidebar-toggle" class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <h1><i data-lucide="film"></i> KeepUp</h1>
+      <div class="topbar-actions">
+        <button id="nav-search-toggle" class="icon-btn" aria-label="Toggle search"><i data-lucide="search"></i></button>
+        <div class="search-controls" id="search-controls" style="display: none">
+          <input type="text" id="search-input" placeholder="Enter movie title..." />
+          <button id="search-button"><i data-lucide="search"></i> Search</button>
         </div>
       </div>
+    </div>
 
-      <!-- STATS -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <!-- CARD -->
-        <div
-          class="bg-[#12121a]/50 backdrop-blur-sm p-5 rounded-2xl border border-gray-800 flex items-center gap-4 transition-all duration-300 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/5"
-        >
-          <div
-            class="bg-purple-600/10 p-3 rounded-xl text-purple-400 border border-purple-500/20"
-          >
-            <i class="fa-solid fa-eye"></i>
-          </div>
-          <div>
-            <h3 id="stat-watching" class="text-xl font-semibold">0</h3>
-            <p class="text-gray-400 text-sm">Currently Watching</p>
-          </div>
-        </div>
+    <aside id="sidebar" class="sidebar collapsed" aria-hidden="true">
+      <div class="sidebar-inner">
+        <nav class="page-nav">
+          <a href="index.html"><i data-lucide="home"></i> <span class="nav-label">Home</span></a>
+          <a href="movies.html"><i data-lucide="clapperboard"></i> <span class="nav-label">Movies</span></a>
+          <a href="shows.html"><i data-lucide="tv"></i> <span class="nav-label">Shows</span></a>
+          <a href="social.html"><i data-lucide="users"></i> <span class="nav-label">Friends &amp; Groups</span></a>
+        </nav>
 
-        <div
-          class="bg-[#12121a] p-5 rounded-xl border border-gray-800 flex items-center gap-4 transition-all duration-300 hover:border-purple-500/50"
-        >
-          <div class="bg-purple-600/20 p-3 rounded-lg text-purple-400">
-            <i class="fa-solid fa-check"></i>
-          </div>
-          <div>
-            <h3 id="stat-completed" class="text-xl font-semibold">0</h3>
-            <p class="text-gray-400 text-sm">Completed</p>
-          </div>
-        </div>
+        <!-- sidebar-search removed on home page (search moved to topbar) -->
 
-        <div
-          class="bg-[#12121a] p-5 rounded-xl border border-gray-800 flex items-center gap-4 transition-all duration-300 hover:border-purple-500/50"
-        >
-          <div class="bg-purple-600/20 p-3 rounded-lg text-purple-400">
-            <i class="fa-solid fa-clock"></i>
-          </div>
-          <div>
-            <h3 id="stat-planned" class="text-xl font-semibold">0</h3>
-            <p class="text-gray-400 text-sm">Plan to Watch</p>
-          </div>
-        </div>
-
-        <div
-          class="bg-[#12121a] p-5 rounded-xl border border-gray-800 flex items-center gap-4 transition-all duration-300 hover:border-purple-500/50"
-        >
-          <div class="bg-purple-600/20 p-3 rounded-lg text-purple-400">
-            <i class="fa-solid fa-bell"></i>
-          </div>
-          <div>
-            <h3 id="stat-new" class="text-xl font-semibold">0</h3>
-            <p class="text-gray-400 text-sm">New Seasons</p>
+        <div class="sidebar-account">
+          <button id="account-icon-btn" class="account-btn" aria-expanded="false" aria-label="Account">
+            <i data-lucide="user"></i>
+            <span>Account</span>
+          </button>
+          <div id="account-panel" class="account-panel" aria-hidden="true">
+            <div id="signed-out-actions">
+              <input type="email" id="email-input" placeholder="Email" />
+              <input type="password" id="password-input" placeholder="Password" />
+              <button id="sign-in-button"><i data-lucide="log-in"></i> Sign In</button>
+              <button id="sign-up-button"><i data-lucide="user-plus"></i> Sign Up</button>
+            </div>
+            <div id="signed-in-actions" style="display: none">
+              <button id="sign-out-button" class="danger"><i data-lucide="log-out"></i> Sign Out</button>
+            </div>
+            <div id="auth-message"></div>
           </div>
         </div>
       </div>
+    </aside>
+    <div id="overlay" class="overlay" aria-hidden="true"></div>
 
-      <!-- ACTION CARDS -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Suggestions -->
-        <div
-          id="suggestions-card"
-          onclick="handleGetSuggestions()"
-          class="bg-[#12121a] p-6 rounded-xl border border-gray-800 transition-all duration-300 hover:border-purple-500 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(168,85,247,0.1)] cursor-pointer"
-        >
-          <div class="text-purple-400 text-xl mb-3">✨</div>
-          <h3 class="font-semibold text-lg mb-2">Get Suggestions</h3>
-          <p class="text-gray-400 text-sm">
-            AI-powered recommendations based on your watching habits
-          </p>
+    <header>
+      <section id="pick-random-section" style="display: none; margin-top: 16px">
+        <button id="pick-random-button"><i data-lucide="dices"></i> Can't Decide? Pick for Me!</button>
+        <div id="tonight-choice-card" style="position: relative;">
+          <button id="close-tonight-choice" style="position: absolute; top: 12px; right: 12px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 10;" aria-label="Dismiss"><i data-lucide="x"></i></button>
+          <h2><i data-lucide="sparkles"></i> Tonight's Choice</h2>
+          <div id="tonight-choice-content"></div>
         </div>
-
-        <!-- Discussions -->
-        <div
-          class="bg-[#12121a] p-6 rounded-xl border border-gray-800 transition-all duration-300 hover:border-purple-500 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(168,85,247,0.1)] cursor-pointer"
-        >
-          <div class="text-purple-400 text-xl mb-3">⭐</div>
-          <h3 class="font-semibold text-lg mb-2">Join Discussions</h3>
-          <p class="text-gray-400 text-sm">
-            Share your thoughts and connect with fellow viewers
-          </p>
-        </div>
+      </section>
+      <div id="search-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="search-progress-bar"></div>
       </div>
+    </header>
 
-      <!-- TRENDING -->
-      <div class="mt-12">
-        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
-          <i class="fa-solid fa-fire text-orange-500"></i> Trending Today
-        </h3>
-        <div
-          id="trending-dashboard"
-          class="grid grid-cols-2 md:grid-cols-4 gap-4"
-        >
-          <p class="text-gray-500 text-sm italic">
-            Connect your TMDB API key to see what's trending.
-          </p>
+    <main>
+      <section id="hero-banner" class="hero-banner" aria-hidden="true">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-badge"><i data-lucide="trending-up"></i> Trending Today</div>
+          <h2 id="hero-title">Top Trending</h2>
+          <p id="hero-overview"></p>
+          <div class="hero-actions">
+            <button id="hero-trailer-btn" class="primary">Watch Trailer</button>
+            <button id="hero-add-watchlist" class="secondary">Add to Watchlist</button>
+          </div>
         </div>
-      </div>
+        <div class="hero-indicators" id="hero-indicators"></div>
+      </section>
+
+
+      <!-- Monthly Wrapped Banner -->
+      <section id="wrapped-banner" class="wrapped-banner" style="display: none;">
+        <div class="wrapped-banner-content">
+          <div class="wrapped-banner-icon"><i data-lucide="sparkles"></i></div>
+          <div class="wrapped-banner-text">
+            <h3 id="wrapped-banner-title">Your Monthly Wrapped is Ready!</h3>
+            <p id="wrapped-banner-subtitle">Relive your watch journey for this past month.</p>
+          </div>
+          <div class="wrapped-banner-actions">
+            <button id="wrapped-banner-open-btn" class="primary"><i data-lucide="play"></i> View Now</button>
+            <button id="wrapped-banner-close-btn" class="secondary-btn" aria-label="Dismiss"><i data-lucide="x"></i></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Upcoming Releases Banner -->
+      <section id="upcoming-releases-section" style="display: none">
+        <div id="upcoming-releases-banner">
+          <h3>🎬 Upcoming in Your Watchlist</h3>
+          <div id="upcoming-releases-list"></div>
+        </div>
+      </section>
+
+      <!-- Next Episodes Countdown Section -->
+      <section id="next-episodes-section" style="display: none; margin-top: 2rem;">
+        <h2>Next Episodes to Air</h2>
+        <div id="next-episodes-list" class="next-episodes-grid">
+          <!-- Countdown cards will be dynamically injected here -->
+        </div>
+      </section>
+
+      <!-- Upcoming Movie Countdown Section -->
+      <section id="upcoming-movies-countdown-section" style="display: none; margin-top: 2rem;">
+        <h2>Upcoming Movie Releases</h2>
+        <div id="upcoming-movies-countdown-list" class="next-episodes-grid">
+          <!-- Movie countdown cards will be dynamically injected here -->
+        </div>
+      </section>
+
+      <!-- Search Results Wrapper -->
+      <section id="results-section" style="display: none">
+        <h2>Results</h2>
+        <div id="search-results-wrapper">
+          <!-- Search results will be dynamically injected here -->
+        </div>
+      </section>
+
+      <!-- Release Radar Section -->
+      <section id="release-radar-section" style="display: none;">
+        <h2>Release Radar — Upcoming Movies & Shows</h2>
+        <div class="carousel-row">
+          <button id="radar-arrow-left" class="carousel-arrow left hidden" aria-label="Scroll left"><i data-lucide="chevron-left"></i></button>
+          <div class="carousel-track" id="release-radar-wrapper">
+            <!-- Dynamic upcoming cards will be injected here -->
+          </div>
+          <button id="radar-arrow-right" class="carousel-arrow right" aria-label="Scroll right"><i data-lucide="chevron-right"></i></button>
+        </div>
+      </section>
+
+      <!-- Watch Statistics Section -->
+      <section id="watch-statistics-section" style="display: none; margin-top: 2rem;">
+        <h2>Watch Statistics</h2>
+        <div class="stats-grid">
+          <div class="stats-card">
+            <div class="stats-icon"><i data-lucide="clock"></i></div>
+            <div class="stats-info">
+              <span class="stats-value" id="stats-watch-time">0d 0h 0m</span>
+              <span class="stats-label">Total Watch Time</span>
+            </div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-icon"><i data-lucide="check-circle-2"></i></div>
+            <div class="stats-info">
+              <span class="stats-value" id="stats-completed-titles">0</span>
+              <span class="stats-label">Completed Titles</span>
+            </div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-icon"><i data-lucide="play"></i></div>
+            <div class="stats-info">
+              <span class="stats-value" id="stats-episodes-logged">0</span>
+              <span class="stats-label">Episodes Logged</span>
+            </div>
+          </div>
+          <div class="stats-card wrapped-stats-card" id="wrapped-stats-card">
+            <div class="stats-icon"><i data-lucide="sparkles" style="color: #a855f7;"></i></div>
+            <div class="stats-info">
+              <span class="stats-value" style="font-size: 1.2rem; display: flex; gap: 0.5rem; align-items: center; margin-bottom: 2px;">
+                <select id="wrapped-month-select" class="wrapped-select" aria-label="Select Wrapped month" style="font-size: 0.95rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.05); color: var(--text); outline: none; cursor: pointer; max-width: 140px;">
+                  <option value="" disabled selected>Select Month</option>
+                </select>
+                <button id="view-wrapped-btn" class="primary" style="padding: 6px 12px; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;" disabled><i data-lucide="play" style="width: 14px; height: 14px;"></i> View</button>
+              </span>
+              <span class="stats-label">Monthly Wrapped</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stats-charts-grid" style="margin-top: 1.5rem;">
+          <div class="stats-chart-card">
+            <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-muted); font-weight: 500;">Status Distribution</h3>
+            <div class="status-bar-wrapper" id="status-bar-wrapper">
+              <!-- Dynamic segments will be inserted here -->
+            </div>
+            <div class="status-legend" id="status-legend" style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.75rem;">
+              <!-- Legends will be inserted here -->
+            </div>
+          </div>
+          
+          <div class="stats-chart-card" id="genre-breakdown-card" style="display: none;">
+            <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-muted); font-weight: 500;">Genre Breakdown</h3>
+            <div class="genre-chart-container" style="display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;">
+              <div class="genre-pie-chart" id="genre-pie-chart"></div>
+              <div class="genre-legend" id="genre-legend" style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 150px;">
+                <!-- Genre legends will be inserted here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recommendations Section -->
+      <section>
+        <h2>Recommended for You</h2>
+        <div id="recommendations-wrapper">
+          <!-- Recommendations will be dynamically injected here -->
+        </div>
+      </section>
     </main>
 
-    <!-- TOAST CONTAINER -->
-    <div
-      id="toast-container"
-      class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2"
-    ></div>
-
-    <footer></footer>
-
-    <script>
-      async function loadDashboardTrending() {
-        const container = document.getElementById("trending-dashboard");
-        if (!container) return;
-
-        try {
-          // Fetch trending data via your Render backend
-          const res = await fetch(`${window.API_BASE}/trending`);
-          if (!res.ok) throw new Error("Failed to fetch trending data");
-          const data = await res.json();
-
-          if (data.results && data.results.length > 0) {
-            container.innerHTML = data.results
-              .slice(0, 4)
-              .map(
-                (item) => `
-              <div class="group cursor-pointer">
-                <div class="relative aspect-[2/3] rounded-xl overflow-hidden border border-gray-800 group-hover:border-purple-500 transition-colors">
-                  <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="${item.title || item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                </div>
-                <p class="mt-2 text-xs font-medium truncate text-gray-400 group-hover:text-purple-400 transition-colors">${item.title || item.name}</p>
+    <!-- Modal for full item details -->
+    <div id="watchlist-modal" class="modal-overlay" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-header" style="position:relative">
+          <img id="modal-poster" src="" alt="Poster" />
+          <div style="flex:1">
+            <h3 id="modal-title">Title</h3>
+            <div id="modal-meta" style="color:var(--text-muted); font-weight:600; margin-top:6px"></div>
+            <div id="modal-genres" class="genre-badges" style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px;"></div>
+            <div id="modal-rating" class="rating" style="margin-top: 8px; display: inline-flex;"><div class="rating-ring" aria-hidden="true"></div><div class="rating-value">-</div></div>
+            <div id="modal-providers" class="providers" style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;"></div>
+          </div>
+          <button id="modal-close" class="secondary" aria-label="Close"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <p id="modal-overview" style="color:var(--text-muted)"></p>
+          
+          <!-- Episodes and Season Tracking Section -->
+          <div id="modal-episodes-container" class="modal-episodes-section" style="display:none">
+            <div class="episodes-progress-container">
+              <div class="episodes-progress-info">
+                <span id="episodes-progress-label">0 / 0 Episodes Watched</span>
+                <span id="episodes-progress-percent">0%</span>
               </div>
-            `,
-              )
-              .join("");
-          }
-        } catch (err) {
-          console.error("Dashboard Trending Error:", err);
-          container.innerHTML = `<p class="text-gray-500 text-xs italic text-center col-span-full">Trending data is temporarily unavailable.</p>`;
-        }
-      }
+              <div class="episodes-progress-bar-bg">
+                <div id="episodes-progress-bar-fg" class="episodes-progress-bar-fg" style="width: 0%"></div>
+              </div>
+            </div>
+            <div id="seasons-accordion-container" class="seasons-accordion-container">
+              <!-- Season items dynamically loaded here -->
+            </div>
+          </div>
 
-      document.addEventListener("DOMContentLoaded", loadDashboardTrending);
-    </script>
+          <div class="modal-actions">
+            <div id="modal-status-container" style="display:none; flex: 1; align-items: center; gap: 0.5rem;"></div>
+            <button id="modal-play-trailer" class="secondary" style="display:none"><i data-lucide="play-circle"></i> Play Trailer</button>
+            <button id="modal-add-watchlist" class="success" style="display:none">Add to Watchlist</button>
+            <button id="modal-delete" class="danger" style="display:none">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+    <script src="script.js"></script>
+    <!-- Video modal for trailers -->
+    <div id="video-modal" class="video-modal" aria-hidden="true">
+      <div class="video-modal-card">
+        <button id="video-modal-close" class="secondary" aria-label="Close video">Close</button>
+        <div class="video-frame-wrap">
+          <iframe id="video-iframe" src="" frameborder="0" allow="autoplay; encrypted-media; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Wrapped Modal -->
+    <div id="wrapped-modal" class="wrapped-modal-overlay" aria-hidden="true" style="display: none;">
+      <div class="wrapped-modal-card">
+        <!-- Progress Bars (will be filled dynamically) -->
+        <div class="wrapped-story-progress" id="wrapped-progress-container"></div>
+        
+        <!-- Action Buttons -->
+        <div class="wrapped-modal-actions-overlay">
+          <button id="wrapped-pause-btn" class="icon-btn" aria-label="Pause"><i data-lucide="pause"></i></button>
+          <button id="wrapped-close-btn" class="icon-btn" aria-label="Close Wrapped"><i data-lucide="x"></i></button>
+        </div>
+
+        <!-- Slides Container -->
+        <div class="wrapped-slides-container" id="wrapped-slides-container">
+          <!-- Slides will be dynamically generated here -->
+        </div>
+
+        <!-- Navigation Tap Overlays -->
+        <div class="wrapped-nav-overlay">
+          <div id="wrapped-nav-prev" class="wrapped-nav-zone" title="Previous Slide"></div>
+          <div id="wrapped-nav-next" class="wrapped-nav-zone" title="Next Slide"></div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

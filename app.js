@@ -1,82 +1,256 @@
-/**
- * GLOBAL CONFIGURATION
- * Replace the URL below with your actual deployed Render backend URL
- */
-window.API_BASE = "https://your-backend-name.onrender.com/api";
+const SUPABASE_URL = 'https://syjvismfzxokzvexhius.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_WnY7m_CdMnqxAEfz6fgBfQ_GtFkLT36';
 
-document.addEventListener("DOMContentLoaded", () => {
-  const user = localStorage.getItem("keepup_user");
-  const path = window.location.pathname.split("/").pop();
+var supabaseClient = null;
+if (typeof supabase !== 'undefined') {
+  supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else {
+  console.error('Supabase SDK failed to load. Please check your internet connection or ad-blocker settings.');
+}
+window.supabaseClient = supabaseClient;
 
-  // 1. Initial Auth Check & Redirects
-  if (!user && (path === "index.html" || path === "dashboard.html" || path === "watchlist.html" || path === "")) {
-    // If not logged in and trying to access private pages, go to landing
-    window.location.href = "landing.html";
+function showAuthMessage(message) {
+  const messageContainer = document.getElementById('auth-message');
+  if (messageContainer) {
+    messageContainer.textContent = message;
+  }
+}
+
+function updateUIForAuth(isLoggedIn) {
+  const signedOutActions = document.getElementById('signed-out-actions');
+  const signedInActions = document.getElementById('signed-in-actions');
+  const searchControls = document.getElementById('search-controls');
+  const watchlistSection = document.getElementById('watchlist-section');
+  const watchlistLink = document.getElementById('watchlist-link');
+  const socialLink = document.getElementById('social-link');
+  const navSearchToggle = document.getElementById('nav-search-toggle');
+
+  if (signedOutActions) {
+    signedOutActions.style.display = isLoggedIn ? 'none' : 'block';
+  }
+  if (signedInActions) {
+    signedInActions.style.display = isLoggedIn ? 'block' : 'none';
+  }
+  if (navSearchToggle) {
+    navSearchToggle.style.display = isLoggedIn ? 'inline-flex' : 'none';
+  }
+  if (searchControls) {
+    searchControls.style.display = 'none';
+  }
+  if (watchlistSection) {
+    watchlistSection.style.display = isLoggedIn ? 'block' : 'none';
+  }
+  if (watchlistLink) {
+    watchlistLink.style.display = isLoggedIn ? 'inline-block' : 'none';
+  }
+  if (socialLink) {
+    socialLink.style.display = isLoggedIn ? 'inline-block' : 'none';
+  }
+  const releaseRadarSection = document.getElementById('release-radar-section');
+  if (releaseRadarSection && !isLoggedIn) {
+    releaseRadarSection.style.display = 'none';
+  }
+}
+
+async function ensureUserProfile(user) {
+  if (!user?.id) return;
+
+  const { data, error } = await supabaseClient
+    .from('profiles')
+    .select('id, username')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error checking profile:', error);
     return;
   }
 
-  // 2. Inject Navigation (Fixes the "No Options" issue)
-  renderLayout();
+  if (!data) {
+    const defaultUsername = user.email
+      ? user.email.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '').toLowerCase() || `user_${user.id.slice(0, 8)}`
+      : `user_${user.id.slice(0, 8)}`;
 
-  // Update Display Name if element exists (Dashboard specific)
-  const nameEl = document.getElementById("display-name");
-  if (nameEl && user) {
-    const name = user.split("@")[0];
-    nameEl.innerText = name.charAt(0).toUpperCase() + name.slice(1);
+    const { error: insertError } = await supabaseClient.from('profiles').insert([
+      { id: user.id, username: defaultUsername, full_name: '', avatar_url: '' },
+    ]);
+    if (insertError) {
+      console.error('Error creating profile:', insertError);
+    }
+  }
+}
+
+async function setAuthUI(user) {
+  const welcomeMessage = document.getElementById('welcome-banner');
+
+  updateUIForAuth(!!user);
+
+  if (user) {
+    await ensureUserProfile(user);
   }
 
-  function renderLayout() {
-    const header = document.querySelector('header');
-    if (!header) return;
-
-    header.innerHTML = `
-      <nav class="flex items-center justify-between px-6 py-4 border-b border-gray-800 bg-[#0b0b0f]/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
-          <div class="bg-purple-600 p-1.5 rounded-lg"><i class="fa-solid fa-tv text-white"></i></div>
-          <h1 class="text-xl font-bold tracking-tighter text-white">KeepUp</h1>
-        </div>
-        <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
-          <a href="index.html" class="hover:text-white transition-colors">Dashboard</a>
-          <a href="watchlist.html" class="hover:text-white transition-colors">Watchlist</a>
-          <a href="foryou.html" class="hover:text-white transition-colors">For You</a>
-          <a href="discuss.html" class="hover:text-white transition-colors">Discuss</a>
-        </div>
-        <div class="flex items-center gap-4">
-          ${user ? 
-            `<span class="text-xs text-gray-400 hidden lg:inline">${user}</span>
-             <button onclick="logout()" class="text-xs text-red-500 hover:text-red-400 ml-4 transition-colors">Logout</button>` : 
-            `<a href="login.html" class="bg-purple-600 px-4 py-2 rounded-lg text-sm font-semibold text-white">Login</a>`
-          }
-        </div>
-      </nav>
-    `;
+  let username = 'User';
+  if (user) {
+    const { data: profile } = await supabaseClient
+      .from('profiles')
+      .select('username')
+      .eq('id', user.id)
+      .maybeSingle();
+    if (profile && profile.username) {
+      username = profile.username;
+    } else {
+      username = user.email ? user.email.split('@')[0] : 'User';
+    }
+  showAuthMessage('');
+  if (window.loadWatchlist) {
+    window.loadWatchlist();
+  }
+  if (window.loadWatchStatistics) {
+    window.loadWatchStatistics();
+  }
+  if (window.loadUpcomingReleases) {
+    window.loadUpcomingReleases();
+  }
+  if (window.loadNextEpisodesCountdown) {
+    window.loadNextEpisodesCountdown();
+  }
+  if (window.loadUpcomingMoviesCountdown) {
+    window.loadUpcomingMoviesCountdown();
+  }
   }
 
-  // 3. Page Specific Logic
-  if (path === "index.html" || path === "dashboard.html" || path === "") {
-    loadTrendingContent();
+  // Initialize social page if on social.html
+  if (window.location.pathname.includes('social.html')) {
+    const socialDashboard = document.getElementById('social-dashboard');
+    if (socialDashboard) socialDashboard.style.display = user ? 'grid' : 'none';
+    if (window.loadPendingRequests) window.loadPendingRequests();
+    if (window.loadUserGroups) window.loadUserGroups();
+    if (window.loadFriends) window.loadFriends();
+  }
+}
+
+async function signIn() {
+  const email = document.getElementById('email-input')?.value.trim();
+  const password = document.getElementById('password-input')?.value.trim();
+
+  if (!email || !password) {
+    showAuthMessage('Please enter email and password.');
+    return;
   }
 
-  if (path === "details.html") {
-    loadMovieDetails();
+  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+  if (error) {
+    showAuthMessage(error.message);
+    return;
+  }
+
+  showAuthMessage('Signed in successfully.');
+}
+
+async function signUp() {
+  const email = document.getElementById('email-input')?.value.trim();
+  const password = document.getElementById('password-input')?.value.trim();
+
+  if (!email || !password) {
+    showAuthMessage('Please enter email and password.');
+    return;
+  }
+
+  const { data, error } = await supabaseClient.auth.signUp({ email, password });
+  if (error) {
+    showAuthMessage(error.message);
+    return;
+  }
+
+  if (data?.user) {
+    await ensureUserProfile(data.user);
+  }
+
+  showAuthMessage('Sign-up complete. Check your email for confirmation if required.');
+}
+
+async function signOut() {
+  const { error } = await supabaseClient.auth.signOut();
+  if (error) {
+    showAuthMessage(error.message);
+    return;
+  }
+
+  showAuthMessage('Signed out successfully.');
+}
+
+async function clearSession() {
+  const { error } = await supabaseClient.auth.signOut();
+
+  // Remove any stored Supabase auth session data from local storage.
+  Object.keys(localStorage).forEach(key => {
+    if (key.includes('supabase') || key.startsWith('sb-')) {
+      localStorage.removeItem(key);
+    }
+  });
+
+  await setAuthUI(null);
+  if (window.loadWatchlist) {
+    window.loadWatchlist();
+  }
+
+  if (error) {
+    showAuthMessage(`Session cleared, but sign-out returned an error: ${error.message}`);
+    console.error('Supabase sign-out error when clearing session:', error);
+  } else {
+    showAuthMessage('Session cleared. You can now sign in as a different user.');
+  }
+}
+
+async function initializeAuth() {
+  const { data } = await supabaseClient.auth.getSession();
+  await setAuthUI(data?.session?.user ?? null);
+
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    setAuthUI(session?.user ?? null);
+  });
+}
+
+function highlightActivePage() {
+  const pageLinks = document.querySelectorAll('nav.page-nav a');
+  const currentPage = window.location.pathname.split('/').pop();
+
+  pageLinks.forEach(link => {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
+    } else {
+      link.classList.remove('active');
+    }
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const signInButton = document.getElementById('sign-in-button');
+  const signUpButton = document.getElementById('sign-up-button');
+  const signOutButton = document.getElementById('sign-out-button');
+
+  signInButton?.addEventListener('click', signIn);
+  signUpButton?.addEventListener('click', signUp);
+  signOutButton?.addEventListener('click', signOut);
+
+  // Toggle account dropdown
+  document.addEventListener('click', (e) => {
+    const dropdownButton = document.getElementById('account-dropdown-button');
+    const dropdownMenu = document.getElementById('account-dropdown-menu');
+    if (dropdownButton && dropdownMenu) {
+      if (dropdownButton.contains(e.target)) {
+        dropdownMenu.classList.toggle('show');
+        dropdownButton.classList.toggle('active');
+      } else if (!dropdownMenu.contains(e.target)) {
+        dropdownMenu.classList.remove('show');
+        dropdownButton.classList.remove('active');
+      }
+    }
+  });
+
+  initializeAuth();
+  highlightActivePage();
+  if (window.lucide) {
+    lucide.createIcons();
   }
 });
-
-window.logout = () => {
-  localStorage.removeItem("keepup_user");
-  window.location.href = "landing.html";
-};
-
-  async function loadTrendingContent() {
-    const API_BASE = window.API_BASE || "http://localhost:5000/api/tmdb";
-    try {
-      // We call our backend instead of TMDB directly to keep the API Key safe
-      const response = await fetch(`${API_BASE}/trending?type=movie&time_window=day`);
-      
-      if (!response.ok) throw new Error("Backend connection failed");
-      
-      const data = await response.json();
-      displayMovies(data.results, "trending-grid");
-    } catch (error) {
-      console.error("Error loading dashboard:", error);
-      const container = document.getElementById("trending-grid");

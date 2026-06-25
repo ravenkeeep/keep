@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KeepUp — Show Watchlist</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="topbar">
+      <button id="sidebar-toggle" class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <h1><i data-lucide="film"></i> KeepUp</h1>
+    </div>
+
+    <aside id="sidebar" class="sidebar collapsed" aria-hidden="true">
+      <div class="sidebar-inner">
+        <nav class="page-nav">
+          <a href="index.html"><i data-lucide="home"></i> <span class="nav-label">Home</span></a>
+          <a href="movies.html"><i data-lucide="clapperboard"></i> <span class="nav-label">Movies</span></a>
+          <a href="shows.html"><i data-lucide="tv"></i> <span class="nav-label">Shows</span></a>
+          <a href="social.html"><i data-lucide="users"></i> <span class="nav-label">Friends &amp; Groups</span></a>
+        </nav>
+
+        <div class="sidebar-account">
+          <button id="account-icon-btn" class="account-btn" aria-expanded="false" aria-label="Account">
+            <i data-lucide="user"></i>
+            <span>Account</span>
+          </button>
+          <div id="account-panel" class="account-panel" aria-hidden="true">
+            <div id="signed-out-actions">
+              <input type="email" id="email-input" placeholder="Email" />
+              <input type="password" id="password-input" placeholder="Password" />
+              <button id="sign-in-button"><i data-lucide="log-in"></i> Sign In</button>
+              <button id="sign-up-button"><i data-lucide="user-plus"></i> Sign Up</button>
+            </div>
+            <div id="signed-in-actions" style="display: none">
+              <button id="sign-out-button" class="danger"><i data-lucide="log-out"></i> Sign Out</button>
+            </div>
+            <div id="auth-message"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div id="overlay" class="overlay" aria-hidden="true"></div>
+
+    <main>
+
+      <section id="watchlist-section">
+        <h2>Show Watchlist</h2>
+        <div id="watchlist-completion-progress">
+          <div>
+            <span>Your completion progress</span>
+            <span id="watchlist-completion-text">0%</span>
+          </div>
+          <div style="width: 100%; height: 10px; background: #e0e0e0; border-radius: 6px; overflow: hidden">
+            <div id="watchlist-completion-bar"></div>
+          </div>
+        </div>
+        <div id="watchlist-filters" style="margin-top:1rem; margin-bottom:1rem; display:flex; gap:0.5rem; flex-wrap:wrap;"></div>
+        <div id="watchlist-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="watchlist-progress-bar"></div>
+        </div>
+        <div id="watchlist-wrapper" class="">
+          <!-- Saved items will be dynamically injected here -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal for full item details -->
+    <div id="watchlist-modal" class="modal-overlay" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-header" style="position:relative">
+          <img id="modal-poster" src="" alt="Poster" />
+          <div style="flex:1">
+            <h3 id="modal-title">Title</h3>
+            <div id="modal-meta" style="color:var(--text-muted); font-weight:600; margin-top:6px"></div>
+            <div id="modal-genres" class="genre-badges" style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px;"></div>
+            <div id="modal-rating" class="rating" style="margin-top: 8px; display: inline-flex;"><div class="rating-ring" aria-hidden="true"></div><div class="rating-value">-</div></div>
+            <div id="modal-providers" class="providers" style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;"></div>
+          </div>
+          <button id="modal-close" class="secondary" aria-label="Close"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <p id="modal-overview" style="color:var(--text-muted)"></p>
+          
+          <!-- Episodes and Season Tracking Section -->
+          <div id="modal-episodes-container" class="modal-episodes-section" style="display:none">
+            <div class="episodes-progress-container">
+              <div class="episodes-progress-info">
+                <span id="episodes-progress-label">0 / 0 Episodes Watched</span>
+                <span id="episodes-progress-percent">0%</span>
+              </div>
+              <div class="episodes-progress-bar-bg">
+                <div id="episodes-progress-bar-fg" class="episodes-progress-bar-fg" style="width: 0%"></div>
+              </div>
+            </div>
+            <div id="seasons-accordion-container" class="seasons-accordion-container">
+              <!-- Season items dynamically loaded here -->
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <div id="modal-status-container" style="display:none; flex: 1; align-items: center; gap: 0.5rem;"></div>
+            <button id="modal-play-trailer" class="secondary" style="display:none"><i data-lucide="play-circle"></i> Play Trailer</button>
+            <button id="modal-add-watchlist" class="success" style="display:none">Add to Watchlist</button>
+            <button id="modal-delete" class="danger" style="display:none">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+    <script src="script.js"></script>
+    <!-- Video modal for trailers -->
+    <div id="video-modal" class="video-modal" aria-hidden="true">
+      <div class="video-modal-card">
+        <button id="video-modal-close" class="secondary" aria-label="Close video">Close</button>
+        <div class="video-frame-wrap">
+          <iframe id="video-iframe" src="" frameborder="0" allow="autoplay; encrypted-media; fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
